@@ -18,7 +18,7 @@ const createProduct = async (req, res) => {
 
         // Upload image to Cloudinary
         uploadedImage = await cloudinary.uploader.upload(image, {
-            folder: "products",
+            folder: "gadget-grid/products",
         });
 
         // Create product in DB

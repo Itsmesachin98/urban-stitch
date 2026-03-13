@@ -1,11 +1,12 @@
+import { useEffect } from "react";
 import { Navigate, Route, Routes } from "react-router-dom";
 
+import Navbar from "./components/Navbar";
 import HomePage from "./pages/HomePage";
 import SignUpPage from "./pages/SignUpPage";
 import LoginPage from "./pages/LoginPage";
-import Navbar from "./components/Navbar";
+import AdminPage from "./pages/AdminPage";
 import useUserStore from "./stores/useUserStore";
-import { useEffect } from "react";
 import LoadingSpinner from "./components/LoadingSpinner";
 
 function App() {
@@ -38,6 +39,16 @@ function App() {
                     <Route
                         path="/login"
                         element={user ? <Navigate to="/" /> : <LoginPage />}
+                    />
+                    <Route
+                        path="/secret-dashboard"
+                        element={
+                            user?.role === "admin" ? (
+                                <AdminPage />
+                            ) : (
+                                <Navigate to="/login" />
+                            )
+                        }
                     />
                 </Routes>
             </div>
