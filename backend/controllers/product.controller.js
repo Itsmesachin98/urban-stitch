@@ -143,7 +143,7 @@ const getRecommendedProducts = async (req, res) => {
                 },
             },
             {
-                $sample: { size: 3 },
+                $sample: { size: 4 },
             },
             {
                 $project: {
