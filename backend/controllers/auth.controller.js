@@ -16,6 +16,7 @@ import {
     setRefreshTokenCookie,
 } from "../utils/cookie.js";
 
+// POST api/auth/signup
 const signup = async (req, res) => {
     try {
         const { name, email, password } = req.body;
@@ -78,6 +79,7 @@ const signup = async (req, res) => {
     }
 };
 
+// POST api/auth/login
 const login = async (req, res) => {
     try {
         const { email, password } = req.body;
@@ -139,6 +141,7 @@ const login = async (req, res) => {
     }
 };
 
+// POST api/auth/logout
 const logout = async (req, res) => {
     try {
         const refreshToken = req.cookies?.refreshToken;

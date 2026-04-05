@@ -8,119 +8,122 @@ const useUserStore = create((set) => ({
     loading: false,
     checkingAuth: true,
 
+    // GET api/auth/profile
     checkAuth: async () => {
         set({ checkingAuth: true });
 
         try {
             const res = await axios.get("/auth/profile");
-            set({ user: res.data.user, checkingAuth: false });
+            set({ user: res?.data?.user || null });
         } catch (error) {
-            console.error("Auth check failed:", error);
-            set({ user: null, checkingAuth: false });
+            console.error("Auth check failed: ", error);
+            set({ user: null });
+        } finally {
+            set({ checkingAuth: false });
         }
     },
 
+    // POST api/auth/signup
     signup: async ({ name, email, password, confirmPassword }) => {
-        // Start loading
         set({ loading: true });
 
-        // ---- Input Validation ----
-        if (!name?.trim()) {
-            set({ loading: false });
-            return toast.error("Full name is required");
-        }
-
-        if (!email?.trim()) {
-            set({ loading: false });
-            return toast.error("Email is required");
-        }
-
-        if (!password) {
-            set({ loading: false });
-            return toast.error("Password is required");
-        }
-
-        if (password !== confirmPassword) {
-            set({ loading: false });
-            return toast.error("Passwords do not match");
-        }
-
         try {
+            // Normalize input
+            const trimmedName = name?.trim();
+            const trimmedEmail = email?.trim();
+
+            // Validation
+            if (!trimmedName) {
+                set({ loading: false });
+                return toast.error("Full name is required");
+            }
+
+            if (!trimmedEmail) {
+                set({ loading: false });
+                return toast.error("Email is required");
+            }
+
+            if (!password) {
+                set({ loading: false });
+                return toast.error("Password is required");
+            }
+
+            if (password !== confirmPassword) {
+                set({ loading: false });
+                return toast.error("Passwords do not match");
+            }
+
             const res = await axios.post("/auth/signup", {
-                name: name.trim(),
-                email: email.trim(),
+                name: trimmedName,
+                email: trimmedEmail,
                 password,
             });
 
-            set({
-                user: res.data.user,
-                loading: false,
-            });
-
-            toast.success(res.data.message || "Signup successful");
-            return res.data.user;
+            set({ user: res?.data?.user });
+            toast.success(res?.data?.message || "Signup successful");
         } catch (error) {
             const message =
                 error?.response?.data?.message ||
+                error?.message ||
                 "Something went wrong. Please try again.";
 
-            set({ loading: false });
             toast.error(message);
+        } finally {
+            set({ loading: false });
         }
     },
 
+    // POST api/auth/login
     login: async (email, password) => {
-        // Start loading
         set({ loading: true });
 
-        // ---- Input Validation ----
-        if (!email?.trim()) {
-            set({ loading: false });
-            return toast.error("Email is required");
-        }
-
-        if (!password) {
-            set({ loading: false });
-            return toast.error("Password is required");
-        }
-
         try {
+            // Normalize input
+            const trimmedEmail = email?.trim();
+
+            // Validation
+            if (!trimmedEmail) {
+                set({ loading: false });
+                return toast.error("Email is required");
+            }
+
+            if (!password) {
+                set({ loading: false });
+                return toast.error("Password is required");
+            }
+
             const res = await axios.post("/auth/login", {
-                email: email.trim(),
+                email: trimmedEmail,
                 password,
             });
 
-            set({
-                user: res.data.user,
-                loading: false,
-            });
-
-            toast.success(res.data.message || "Login successful");
-            return res.data.user;
+            set({ user: res?.data?.user });
+            toast.success(res?.data?.message || "Login successful");
         } catch (error) {
             const message =
                 error?.response?.data?.message ||
+                error?.message ||
                 "Something went wrong. Please try again.";
 
-            set({ loading: false });
             toast.error(message);
+        } finally {
+            set({ loading: false });
         }
     },
 
+    // POST api/auth/logout
     logout: async () => {
         try {
             await axios.post("/auth/logout");
-
             set({ user: null });
-
             toast.success("Logged out successfully");
         } catch (error) {
-            console.error("Logout Error:", error);
-
-            toast.error(
+            const message =
                 error?.response?.data?.message ||
-                    "Failed to logout. Please try again.",
-            );
+                error?.message ||
+                "Failed to logout. Please try again.";
+
+            toast.error(message);
         }
     },
 }));
