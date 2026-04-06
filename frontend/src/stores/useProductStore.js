@@ -16,7 +16,7 @@ const useProductStore = create((set, get) => ({
             const res = await axios.post("/products", productData);
 
             set((state) => ({
-                products: [...state.products, res.data],
+                products: [...state.products, res?.data?.product],
             }));
 
             toast.success("Product created successfully");
